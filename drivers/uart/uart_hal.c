@@ -1,5 +1,5 @@
-#include <uart_hal.h>
-#include <gpio.h>
+#include "uart/uart_hal.h"
+#include "uart/gpio.h"
 
 /**
  * @file uart_hal.c

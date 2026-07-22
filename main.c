@@ -1,19 +1,19 @@
 #include "FreeRTOS.h"
 #include "task.h"
-#include "uart_hal.h"
+#include "uart/uart_hal.h"
 
 void uart_task(void *arg)
 {
+    const char* hello_world = "Hello world!\n";
     uart_config_t *cfg = (uart_config_t *)arg;
 
     hal_gpio_uart_setup();
     hal_uart_init(cfg);
 
-    while (1)
-    {
-        hal_uart_write_byte('A');
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
+    const char* p = hello_world;
+    while (*p != '\0') { hal_uart_write_byte(*p++); }
+
+    vTaskDelete(NULL);
 }
 
 int main(void)
@@ -27,16 +27,14 @@ int main(void)
     cfg.stop = 0;
    
     xTaskCreate(
-        uart_task,     // function
-        "uart_task",   // name
-        4096,          // stack size (IMPORTANT!)
-        &cfg,          // argument
-        1,             // priority
-        NULL           // handle
+        uart_task,     
+        "uart_task",   
+        &cfg,         
+        1,            
+        NULL          
     );
 
     vTaskStartScheduler();
 
-    // Should NEVER reach here
     while (1) {}
 }

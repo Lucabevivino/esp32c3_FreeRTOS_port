@@ -25,6 +25,8 @@ COMMON			 = ./common
 TARGET 			= freertos_esp32c3
 TARGET_ELF      = $(BUILD)/$(TARGET).elf
 TARGET_BIN      = $(BUILD)/$(TARGET).bin
+TARGET_MAP		= $(BUILD)/$(TARGET).map
+RAM_BIN     	= $(BUILD)/ram_image.bin
 
 # Headers
 INC_DIRS += -I. -I$(FREERTOS_DIR)/include -I$(FREERTOS_PORT) -I$(DRIVERS) -I$(BSP) -I$(COMMON)
@@ -49,7 +51,7 @@ CFLAGS += -Wall $(INC_DIRS)
 
 # Linker options
 LDFLAGS = -T $(BSP)/linker_mdk.ld \
-          -Wl,-Map=output.map \
+          -Wl,-Map=$(TARGET_MAP) \
           -Wl,--gc-sections \
           -nostartfiles \
           --specs=nosys.specs \
@@ -71,14 +73,11 @@ $(TARGET_BIN): $(TARGET_ELF)
 	@echo "Generating Bin..."
 	@$(ESPTOOL) --chip esp32c3 elf2image --flash_mode dio --flash_freq 40m --flash_size 4MB -o $@ $<
 
-flash: $(TARGET_BIN)
-	@$(ESPTOOL) --chip esp32c3 --port $(PORT) --baud $(BAUD) write_flash 0x0 $(TARGET_BIN)
-
 run: $(TARGET_ELF)
 	@echo "Generating image for RAM..."
-	$(ESPTOOL) --chip esp32c3 elf2image --ram-only-header -o ram_image.bin $(TARGET_ELF)
+	$(ESPTOOL) --chip esp32c3 elf2image --ram-only-header -o $(RAM_BIN) $(TARGET_ELF)
 	@echo "Caricamento in RAM..."
-	$(ESPTOOL) --chip esp32c3 --port $(PORT) --baud $(BAUD) --no-stub load-ram ram_image.bin
+	$(ESPTOOL) --chip esp32c3 --port $(PORT) --baud $(BAUD) --no-stub load-ram $(RAM_BIN)
 
 debug: $(TARGET_ELF)
 	@echo "Starting GDB..."
@@ -88,7 +87,7 @@ monitor:
 	screen $(PORT) 115200
 
 clean:
-	@rm -r $(BUILD) output.map ram_image.bin
+	@rm -rf $(BUILD) 
 
 $(BUILD)/%.o: %.c
 	@mkdir -p $(dir $@)
