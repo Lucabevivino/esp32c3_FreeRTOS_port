@@ -136,7 +136,6 @@ make debug
 ## Further Reading
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — Detailed walkthrough of every subsystem with code references
-- [`CLAUDE.md`](CLAUDE.md) — Instructions for AI coding assistants working in this repo
 - [ESP32-C3 Technical Reference Manual](https://www.espressif.com/sites/default/files/documentation/esp32-c3_technical_reference_manual_en.pdf) — All peripheral registers
 - [RISC-V Privileged Specification](https://github.com/riscv/riscv-isa-manual/releases) — M-mode CSRs, trap handling, interrupt model
 - [FreeRTOS Kernel Docs](https://www.freertos.org/FreeRTOS-kernel-detailed-documentation.html) — Kernel API and porting guide
